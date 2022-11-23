@@ -39,13 +39,6 @@ class FollowSerializer(serializers.ModelSerializer):
         queryset=User.objects.all(), slug_field="username"
     )
 
-    def validate_following(self, data):
-        user = self.context["request"].user
-        following = get_object_or_404(User, username=data)
-        if user == following and self.context["request"].method == "POST":
-            raise serializers.ValidationError("Don't subscribe to yourself")
-        return data
-
     class Meta:
         fields = ("user", "following")
         model = Follow
@@ -56,3 +49,10 @@ class FollowSerializer(serializers.ModelSerializer):
                 message="Subscription already exists",
             )
         ]
+
+    def validate_following(self, data):
+        user = self.context["request"].user
+        following = get_object_or_404(User, username=data)
+        if user == following and self.context["request"].method == "POST":
+            raise serializers.ValidationError("Don't subscribe to yourself")
+        return data
